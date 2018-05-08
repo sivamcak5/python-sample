@@ -170,8 +170,6 @@ def giveString(isFound):
         return "True"
     else:
         return "False"
-    
-app.run(debug=True)
 
 
 
