@@ -8,12 +8,12 @@ mysql = MySQLConnector(app,'python')
 
 @app.route('/')
 def root():
-    query = "SELECT id, level1 , ne_list, "
-    query += "  nat_list, "
-    query += "  dep_list, dep_ex_list,lob "
-    query += "FROM pbcs_pl"
-    data = mysql.query_db(query)
-    return render_template('index.html', all_levels=data)
+#     query = "SELECT id, level1 , ne_list, "
+#     query += "  nat_list, "
+#     query += "  dep_list, dep_ex_list,lob "
+#     query += "FROM pbcs_pl"
+#     data = mysql.query_db(query)
+    return render_template('index.html', all_levels=[])
 
 
 @app.route('/levels')
