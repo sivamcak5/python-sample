@@ -1,0 +1,82 @@
+<!doctype html>
+<html lang="en" dir="ltr">
+<head>
+<title>Homepage - PBCS</title>
+ {% include "shared/includes.html" %}
+</head>
+<body class="">
+	<div class="page">
+		<div class="page-main">
+		{% include "shared/head.html" %}
+		<div class="my-3 my-md-5">
+				<div class="container">
+					<div class="row row-cards row-deck">
+						<div class="col-12">
+							<div class="card">
+								<div class="card-header">
+									<h3 class="card-title">Levels</h3>
+									<div class="card-options">
+									 <a href="/levels/new" 
+				                         class="btn btn-outline-primary btn-sm"  title="Add new level"> New  <i class="fe fe-plus"  ></i> </a>  
+				                    </div>
+								</div>
+								<div class="table-responsive">
+									<table class="table card-table table-vcenter text-nowrap">
+										<thead>
+											<tr>
+												<th>Level1</th>
+												<th>LE LIST</th>
+												<th>NAT LIST</th>
+												<th>DEPT List</th>
+												<th>DEPT Exclusion List</th>
+												<th>LOB</th>
+												<th>Actions</th>
+											</tr>
+										</thead>
+
+										<tbody>
+											{% if all_levels|length : %}
+											{% for level in all_levels: %}
+											<tr>
+												<td><a href="/levels/{{level.id}}">{{level.level1}}</a></td>
+												<td>{{level.ne_list}}</td>
+												<td>{{level.nat_list}}</td>
+												<td>{{level.dep_list}}</td>
+												<td>{{level.dep_ex_list}}</td>
+												<td>{{level.lob}}</td>
+												<td> 
+												<a class="icon" href="/levels/{{level.id}}">
+					                              <i class="fe fe-edit"></i>
+					                            </a>
+					                            <a class="icon" href="/levels/{{level.id}}/destroy">
+					                              <i class="fe fe-x-square"></i>
+					                            </a> 
+					                            </td>
+											</tr>
+											{% endfor
+											   
+											 %}
+											
+											{% endif  %}
+											
+											{% if all_levels|length ==0  : %}
+											<tr>
+											 <td colspan="7"> <div class="ml-auto" style="text-align: center;"> No Levels Found. </div> </td>
+											</tr>
+											{% endif %}
+
+										</tbody>
+
+									</table>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+		{% include "shared/foot.html" %}
+		 
+	</div>
+</body>
+</html>

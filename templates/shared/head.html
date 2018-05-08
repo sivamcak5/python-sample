@@ -1,0 +1,72 @@
+
+<div class="header py-4">
+	<div class="container">
+		<div class="d-flex">
+			<a class="header-brand"> PBCS </a> <a href="#"
+				class="header-toggler d-lg-none ml-3 ml-lg-0" data-toggle="collapse"
+				data-target="#headerMenuCollapse"> <span
+				class="header-toggler-icon"></span>
+			</a>
+			<div class="d-flex order-lg-2 col-md-2">
+			</div>
+			<div class="order-lg-2 col-md-6" style="margin-bottom: -18px;margin-top: -10px;">
+				<form class="my-3 my-lg-0 col-md-12" id="search_form" action="/levels/search"
+					method="post">
+					<div class="input-group">
+					<input type="search" class="form-control header-search " value="{{searchQuery}}"
+						name="search_query" id="search_query" placeholder="Search&hellip;" tabindex="1">
+					<div class="input-group-append"   >
+					  <button type="submit" class="btn btn-outline-primary btn-sm">Search <i class="fe fe-search"></i> </button>
+					</div>
+					</div>
+				</form>
+				<div class="col-md-12">
+					{% if statusMsg and statusMsg.status == "error": %}
+					<span style="font-size: smaller; margin-left: .8rem; color: red;">{{statusMsg.message}}</span>
+					{% endif %}
+				</div>
+				
+			</div>
+			<div class="d-flex order-lg-2 ml-auto"></div>
+		</div>
+	</div>
+</div>
+<div class="header collapse d-lg-flex p-0" id="headerMenuCollapse">
+	<div class="container">
+		<div class="row align-items-center">
+			<div class="col-lg-5 ml-auto"></div>
+			<div class="col-lg order-lg-first">
+				<ul class="nav nav-tabs border-0 flex-column flex-lg-row">
+					<li class="nav-item"><a href="/levels" class="nav-link active"><i
+							class="fe fe-home"></i> Home</a></li>
+				</ul>
+			</div>
+		</div>
+	</div>
+	<script type="text/javascript">
+	 
+	require(['jquery'], function(){
+		head.init();
+	})
+	var head = function(){
+		
+		return {
+			init: function(){
+				
+				$("#search_form").submit(function(e) {
+					doSearch($(this).find("#search_query").val());
+					return false;
+				});
+				 
+				function doSearch(searchQuery){
+					window.location.href = "/levels/search/"+searchQuery;
+					return false;
+				}
+			}
+		}
+	}();
+	
+	 
+	
+	</script>
+</div>

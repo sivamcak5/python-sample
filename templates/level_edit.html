@@ -1,0 +1,84 @@
+<!doctype html>
+<html lang="en" dir="ltr">
+<head>
+<title>Homepage - PBCS</title>
+ {% include "shared/includes.html" %}
+</head>
+<body class="">
+	<div class="page">
+		<div class="page-main">
+		{% include "shared/head.html" %}	
+		<div class="my-3 my-md-5">
+				<div class="container">
+					<div class="row row-cards row-deck">
+						<div class="col-12">
+							<div class="card">
+								<div class="card-header">
+									<h3 class="card-title">{{level.level1}}</h3>
+									<div class="card-options"></div>
+								</div>
+								<form action="/levels/{{level.id}}" method="post">
+								<div class="card-body">
+									<div class="row">
+										<div class="col-sm-6 col-md-4">
+											<div class="form-group">
+												<label class="form-label">Level1</label> <input type="text"
+													class="form-control" name="level1" placeholder="Level1"
+													value="{{level.level1}}">
+											</div>
+										</div>
+										<div class="col-sm-6 col-md-4">
+											<div class="form-group">
+												<label class="form-label">LE LIST</label> <input type="text"
+													name="ne_list" class="form-control" id="ne_list"
+													placeholder="999,888 or 110:119 or ALL" value="{{level.ne_list}}">
+											</div>
+										</div>
+										<div class="col-sm-6 col-md-4">
+											<div class="form-group">
+												<label class="form-label">NAT LIST</label> <input
+													type="text" name="nat_list" class="form-control"
+													id="nat_list" placeholder="9999,8888 or 1110:1119 or ALL" value="{{level.nat_list}}">
+											</div>
+										</div>
+										<div class="col-sm-6 col-md-4">
+											<div class="form-group">
+												<label class="form-label">DEPT LIST:</label> <input
+													type="text" name="dep_list" class="form-control"
+													id="dep_list" placeholder="99,88 or 10:19 or ALL" value="{{level.dep_list}}">
+											</div>
+										</div>
+										<div class="col-sm-6 col-md-4">
+											<div class="form-group">
+												<label class="form-label">DEPT Exclusion List:</label> <input
+													type="text" name="dep_ex_list" class="form-control"
+													id="dep_ex_list"   placeholder="99,88 or 10:19" value="{{level.dep_ex_list}}">
+											</div>
+										</div>
+										<div class="col-sm-6 col-md-4">
+											<div class="form-group">
+												<label class="form-label">LOB:</label> <input type="text"
+													name="lob" id="lob" class="form-control" id="dep_list"
+													placeholder="99,88 or 10:19 or ALL" value="{{level.lob}}">
+											</div>
+										</div>
+
+									</div>
+								</div>
+								<div class="card-footer text-right">
+				                  <div class="d-flex">
+				                  	<a  href="/levels" class="btn btn-outline-primary ">Go back</a>
+				                    <button type="submit" class="btn btn-primary ml-auto">Update Level</button>
+				                  </div>
+				                </div>
+				                </form>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+		{% include "shared/foot.html" %}
+	</div>
+</body>
+</html>
