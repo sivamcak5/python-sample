@@ -3,7 +3,7 @@ from mysqlconnection import MySQLConnector
 import re
 app = Flask(__name__)
 app.secret_key = 'SuperSecretKey'
-mysql = MySQLConnector(app,'postgres')
+mysql = MySQLConnector(app,'d21a9hpbni3n5r')
 
 
 @app.route('/')
