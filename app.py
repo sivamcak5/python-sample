@@ -13,7 +13,7 @@ def root():
     query += "  dep_list, dep_ex_list,lob "
     query += "FROM pbcs_pl"
     data = mysql.query_db(query)
-    return render_template('index.html', all_levels=[])
+    return render_template('index.html', all_levels=data)
 
 
 @app.route('/levels')
