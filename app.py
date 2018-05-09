@@ -3,16 +3,16 @@ from mysqlconnection import MySQLConnector
 import re
 app = Flask(__name__)
 app.secret_key = 'SuperSecretKey'
-mysql = MySQLConnector(app,'python')
+mysql = MySQLConnector(app,'postgres')
 
 
 @app.route('/')
 def root():
-#     query = "SELECT id, level1 , ne_list, "
-#     query += "  nat_list, "
-#     query += "  dep_list, dep_ex_list,lob "
-#     query += "FROM pbcs_pl"
-#     data = mysql.query_db(query)
+    query = "SELECT id, level1 , ne_list, "
+    query += "  nat_list, "
+    query += "  dep_list, dep_ex_list,lob "
+    query += "FROM pbcs_pl"
+    data = mysql.query_db(query)
     return render_template('index.html', all_levels=[])
 
 
@@ -172,4 +172,4 @@ def giveString(isFound):
         return "False"
 
 
-
+# app.run(debug=True)

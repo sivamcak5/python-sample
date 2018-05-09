@@ -7,12 +7,12 @@ class MySQLConnection(object):
         config = {
                 'host': 'localhost',
                 'database': db, # we got db as an argument
-                'user': 'root',
-                'password': 'abc123',
-                'port': '3306' # change the port to match the port your SQL server is running on
+                'user': 'postgres',
+                'password': 'admin',
+                'port': '5432' # change the port to match the port your SQL server is running on
         }
         # this will use the above values to generate the path to connect to your sql database
-        DATABASE_URI = "mysql://{}:{}@127.0.0.1:{}/{}".format(config['user'], config['password'], config['port'], config['database'])
+        DATABASE_URI = "postgresql://{}:{}@127.0.0.1:{}/{}".format(config['user'], config['password'], config['port'], config['database'])
         app.config['SQLALCHEMY_DATABASE_URI'] = DATABASE_URI
         app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = True
         # establish the connection to database
