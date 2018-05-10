@@ -12865,6 +12865,9 @@ a.icon:hover {
 .table-vcenter td,
 .table-vcenter th {
   vertical-align: middle;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  white-space: nowrap;
 }
 
 .table-center td,

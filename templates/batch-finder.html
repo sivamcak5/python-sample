@@ -1,0 +1,135 @@
+<!doctype html>
+<html lang="en" dir="ltr">
+<head>
+<title>Homepage - PBCS</title> {% include "shared/includes.html" %}
+</head>
+<body class="">
+	<div class="page">
+		<div class="page-main">
+			{% with active="batchFinder" %} {% include "shared/head.html" %} {%
+			endwith %}
+			<div class="my-3 my-md-5">
+				<div class="container">
+					<div class="row row-cards row-deck">
+						<div class="col-12">
+							<div class="card">
+								<div class="card-header">
+									<h3 class="card-title">Batch Finder</h3>
+									<div class="card-options"></div>
+								</div>
+	<form action="/batch-finder/upload"
+		enctype="multipart/form-data" method="post">
+		<div class="card-body">
+			<div class="row">
+				<div class="col-sm-6 col-md-6">
+					<div class="form-group">
+						<div class="form-label">Input CSV File</div>
+						<div class="input-group">
+							<div class="custom-file">
+								<input type="file" class="custom-file-input" name="file">
+								<label class="custom-file-label">Choose file</label>
+							</div>
+							<div class="input-group-append">
+								<button type="submit" class="btn btn-outline-primary">Upload</button>
+								 
+								 
+							</div>
+						</div>
+
+
+					</div>
+
+				</div>
+			</div>
+			<!-- load table -->
+			<div class="row">
+			<div class="col-sm-12">
+			<div class="table-responsive">
+				<table class="table card-table table-vcenter text-nowrap" style="border: 1px solid #ccc;">
+					<thead>
+						<tr>
+							<th width="50%">Combo Code</th>
+							<th width="50%">Levels</th>
+						</tr>
+					</thead>
+				</table>
+			</div>
+				<div class="table-responsive" style="max-height: 60vh;border: 1px solid #ccc; border-top: none;">
+				<table class="table card-table table-vcenter text-nowrap"  >
+				<colgroup>
+				<col width="50%"/><col width="50%"/>
+				</colgroup>
+					<tbody>
+						{% if all_levels|length : %}
+						{% for level in all_levels: %}
+						<tr>
+							<td>{{level['Code Combo']}}</td>
+							<td>{{'NA' if level['Levels'] == ''  else level['Levels'] }}</td>
+						 
+						</tr>
+						{% endfor
+						   
+						 %}
+						
+						{% endif  %}
+						
+						{% if all_levels|length ==0  : %}
+						<tr>
+						 <td colspan="2"> <div class="ml-auto" style="text-align: center;"> No Levels Found. </div> </td>
+						</tr>
+						{% endif %}
+
+					</tbody>
+
+				</table>
+			</div>
+			
+			</div>
+			
+			</div>
+			
+			
+		</div>
+		<div class="card-footer text-right">
+			<div class="d-flex">
+				<a href="/levels" class="btn btn-outline-primary  ">Go
+					Home</a>
+				 
+			</div>
+		</div>
+	</form>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+			<script type="text/javascript">
+	 
+				require(['jquery'], function(){
+					bf.init();
+				})
+				var bf = function(){
+					
+					return {
+						init: function(){
+							
+							$(".custom-file-input").change(function(e) {
+								var filePath = $(this).val();
+								filePath = filePath.substring(filePath.lastIndexOf("\\")+1,filePath.length);
+								$(this).closest(".custom-file").find(".custom-file-label").text(filePath);
+								return false;
+							});
+							 
+						}
+					}
+				}();
+			
+			 
+			
+			</script>
+
+		</div>
+		{% include "shared/foot.html" %}
+	</div>
+</body>
+</html>

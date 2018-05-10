@@ -1,6 +1,9 @@
 from flask import Flask, request, redirect, render_template, session, flash
 from mysqlconnection import MySQLConnector
 import re
+import csv
+import json
+
 app = Flask(__name__)
 app.secret_key = 'SuperSecretKey'
 mysql = MySQLConnector(app,'d21a9hpbni3n5r')
@@ -8,23 +11,19 @@ mysql = MySQLConnector(app,'d21a9hpbni3n5r')
 
 @app.route('/')
 def root():
-    query = "SELECT id, level1 , ne_list, "
-    query += "  nat_list, "
-    query += "  dep_list, dep_ex_list,lob "
-    query += "FROM pbcs_pl"
-    data = mysql.query_db(query)
-    return render_template('index.html', all_levels=data)
+    return render_template('index.html', all_levels=getLevels())
 
 
 @app.route('/levels')
 def index():
+    return render_template('index.html', all_levels=getLevels())
+
+def getLevels():
     query = "SELECT id, level1 , ne_list, "
     query += "  nat_list, "
     query += "  dep_list, dep_ex_list,lob "
     query += "FROM pbcs_pl"
-    data = mysql.query_db(query)
-    return render_template('index.html', all_levels=data)
-
+    return mysql.query_db(query)
 
 @app.route('/levels/new')
 def new():
@@ -100,23 +99,20 @@ def searchLevels(searchQuery):
     return render_template('index.html', all_levels=list, searchQuery = searchQuery , statusMsg = statusMsg)
 
 def doQueryCheck(searchQuery):
-    list = [];
-    query = "SELECT id, level1 , ne_list, "
-    query += "  nat_list, "
-    query += "  dep_list, dep_ex_list, lob "
-    query += "FROM pbcs_pl " 
-    data = mysql.query_db(query)
+    return doCodeCheck(searchQuery,getLevels())
+    
+
+def doCodeCheck(searchQuery,data):
     searchParts = searchQuery.split("-")
-    
-    
+    list = [];
     for level in data: 
         if (isExistedInLevel(level,searchParts)):
             list.append(level)
     return list
 
 def isExistedInLevel(level,searchParts):
-    print("################## next level ##########")
-    print(level)
+#     print("################## next level ##########")
+#     print(level)
     _le = searchParts[0]
     _nat = searchParts[1]
     _dep = searchParts[2][:2]
@@ -129,37 +125,37 @@ def isExistedInLevel(level,searchParts):
     lob= level['lob'].split(",")
     isFound = False;
     isFound = isPartExisted(le,_le)
-    print("is Legal entity found ? " + giveString(isFound))
+#     print("is Legal entity found ? " + giveString(isFound))
     if isFound:
         isFound = isPartExisted(nat,_nat)
-    print("is Natural Account found ?" + giveString(isFound))
+#     print("is Natural Account found ?" + giveString(isFound))
     if isFound:
         isFound = isPartExisted(dep,_dep)
-        print("is Department found ?" + giveString(isFound))  
+#         print("is Department found ?" + giveString(isFound))  
         if isPartExisted(depe,_dep) :
             isFound = False 
         else:
             isFound = True
-        print("is Department Excluded ?" + giveString(isFound))  
+#         print("is Department Excluded ?" + giveString(isFound))  
         
     if isFound:
         isFound = isPartExisted(lob,_lob) 
-        print("is Lob found ?" + giveString(isFound))         
-    print(giveString(isFound))
+#         print("is Lob found ?" + giveString(isFound))         
+#     print(giveString(isFound))
     return isFound
 
 def isPartExisted(list, s):
-    print(":part check:")
-    print(list)
-    print(s)
+#     print(":part check:")
+#     print(list)
+#     print(s)
     for e in list:
         if e.lower() == "all":
             return True
         elif e == s:
             return True
         elif e.find(":") != -1:
-            print("it has : data")
-            print("we need to process")
+#             print("it has : data")
+#             print("we need to process")
             rangs = e.split(":")
             if((int(rangs[0]) <= int(s)) & (int(rangs[1]) >= int(s))):
                 return True
@@ -171,5 +167,41 @@ def giveString(isFound):
     else:
         return "False"
 
+@app.route('/batch-finder')
+def batchFinder():
+    return render_template('batch-finder.html') 
+
+def decode_utf8(input_iterator):
+    for l in input_iterator:
+        yield l.decode('utf-8')
+@app.route('/batch-finder/upload' , methods=['POST'])
+def upload():
+    reader = csv.DictReader(decode_utf8(request.files['file']))
+    jsonArray= []
+    data = getLevels()
+    
+    for row in reader:
+#         json.dump(row, jsonfile)
+#         jsonfile.write('\n')
+        rowJsonStr = json.dumps(row)
+        rowJson =  json.loads(rowJsonStr)
+        print(rowJson['Code Combo'])
+        levels= doCodeCheck(rowJson['Code Combo'],data)
+        print(levels)
+        if  len(levels)>0:
+            level = "";
+            for l in levels:
+                level= level+ l['level1'] + ","
+            if level != "":
+                level = level[:-1]
+            rowJson['Levels'] = level
+            print(rowJson)
+        else:
+            rowJson['Levels'] = "NA"
+        jsonArray.append(rowJson)
+#         print(json.dumps(row, indent=4))
+    print(jsonArray)
+
+    return render_template('batch-finder.html', all_levels = jsonArray) 
 
 # app.run(debug=True)
