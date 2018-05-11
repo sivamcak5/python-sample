@@ -24,45 +24,69 @@
 											<div class="form-group">
 												<label class="form-label">Level1</label> <input type="text"
 													class="form-control" name="level1" placeholder="Level1"
-													value="">
+													value="{{level.level1}}">
 											</div>
 										</div>
 										<div class="col-sm-6 col-md-4">
 											<div class="form-group">
 												<label class="form-label">LE LIST</label> <input type="text"
 													name="ne_list" class="form-control" id="ne_list"
-													placeholder="999,888 or 110:119 or ALL">
+													placeholder="999,888 or 110:119 or ALL" value="{{level.ne_list}}">
 											</div>
 										</div>
 										<div class="col-sm-6 col-md-4">
 											<div class="form-group">
 												<label class="form-label">NAT LIST</label> <input
 													type="text" name="nat_list" class="form-control"
-													id="nat_list" placeholder="9999,8888 or 1110:1119 or ALL">
+													id="nat_list" placeholder="9999,8888 or 1110:1119 or ALL" value="{{level.nat_list}}">
 											</div>
 										</div>
 										<div class="col-sm-6 col-md-4">
 											<div class="form-group">
 												<label class="form-label">DEPT LIST:</label> <input
 													type="text" name="dep_list" class="form-control"
-													id="dep_list" placeholder="99,88 or 10:19 or ALL">
+													id="dep_list" placeholder="99,88 or 10:19 or ALL" value="{{level.dep_list}}">
 											</div>
 										</div>
 										<div class="col-sm-6 col-md-4">
 											<div class="form-group">
 												<label class="form-label">DEPT Exclusion List:</label> <input
 													type="text" name="dep_ex_list" class="form-control"
-													id="dep_ex_list" id="dep_list" placeholder="99,88 or 10:19">
+													id="dep_ex_list" id="dep_list" placeholder="99,88 or 10:19" value="{{level.dep_ex_list}}">
 											</div>
 										</div>
 										<div class="col-sm-6 col-md-4">
 											<div class="form-group">
 												<label class="form-label">LOB:</label> <input type="text"
 													name="lob" id="lob" class="form-control" id="dep_list"
-													placeholder="99,88 or 10:19 or ALL">
+													placeholder="99,88 or 10:19 or ALL" value="{{level.lob}}">
 											</div>
 										</div>
 
+									</div>
+									<div class="row">
+										<div class="col-sm-12">
+									       {% if errors %}
+							                <div class="alert alert-warning">
+							                	<ul>
+									        {% for field in errors %}
+									        	{% if field == 'duplicate': %}
+									        		<li>Duplicate : {{ errors[field]['msg'] }}
+									        		{% set id = errors[field]['id'] %}
+									        		{% set level1 = errors[field]['level1'] %}
+									        		<a href='/levels/{{id}}'> {{level1}} </a>
+									        		</li>
+									        	{% endif %}
+									        	{% if field != 'duplicate': %}
+									                <li>{{ errors[field] }}</li>
+									        	{% endif %}
+									        	
+									        {% endfor %}
+									        	</ul>
+							                </div>
+									       {% endif %}
+										
+										</div>
 									</div>
 								</div>
 								<div class="card-footer text-right">

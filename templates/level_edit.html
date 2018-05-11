@@ -64,6 +64,30 @@
 										</div>
 
 									</div>
+									<div class="row">
+										 <div class="col-sm-12">
+									       {% if errors %}
+							                <div class="alert alert-warning">
+							                	<ul>
+									        {% for field in errors %}
+									        	{% if field == 'duplicate': %}
+									        		<li>Duplicate : {{ errors[field]['msg'] }}
+									        		{% set id = errors[field]['id'] %}
+									        		{% set level1 = errors[field]['level1'] %}
+									        		<a href='/levels/{{id}}'> {{level1}} </a>
+									        		</li>
+									        	{% endif %}
+									        	{% if field != 'duplicate': %}
+									                <li>{{ errors[field] }}</li>
+									        	{% endif %}
+									        	
+									        {% endfor %}
+									        	</ul>
+							                </div>
+									       {% endif %}
+										
+										</div>
+									</div>
 								</div>
 								<div class="card-footer text-right">
 				                  <div class="d-flex">
