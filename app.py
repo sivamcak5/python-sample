@@ -131,7 +131,7 @@ def update(id):
 
 @app.route('/levels/search/<searchQuery>')
 def searchLevels(searchQuery):
-    print(searchQuery)
+    #print(searchQuery)
     list = [];
     statusMsg = {"status":"", "message":""}
     if len(searchQuery) == 13 :
@@ -164,8 +164,8 @@ def doCodeCheck(searchQuery, data):
 
 
 def isExistedInLevel(level, searchParts):
-#     print("################## next level ##########")
-#     print(level)
+#     #print("################## next level ##########")
+#     #print(level)
     _le = searchParts[0]
     _nat = searchParts[1]
     _dep = searchParts[2][:2]
@@ -178,38 +178,38 @@ def isExistedInLevel(level, searchParts):
     lob = level['lob'].split(",")
     isFound = False;
     isFound = isPartExisted(le, _le)
-#     print("is Legal entity found ? " + giveString(isFound))
+#     #print("is Legal entity found ? " + giveString(isFound))
     if isFound:
         isFound = isPartExisted(nat, _nat)
-#     print("is Natural Account found ?" + giveString(isFound))
+#     #print("is Natural Account found ?" + giveString(isFound))
     if isFound:
         isFound = isPartExisted(dep, _dep)
-#         print("is Department found ?" + giveString(isFound))  
+#         #print("is Department found ?" + giveString(isFound))  
         if isPartExisted(depe, _dep) :
             isFound = False 
         else:
             isFound = True
-#         print("is Department Excluded ?" + giveString(isFound))  
+#         #print("is Department Excluded ?" + giveString(isFound))  
         
     if isFound:
         isFound = isPartExisted(lob, _lob) 
-#         print("is Lob found ?" + giveString(isFound))         
-#     print(giveString(isFound))
+#         #print("is Lob found ?" + giveString(isFound))         
+#     #print(giveString(isFound))
     return isFound
 
 
 def isPartExisted(list, s):
-#     print(":part check:")
-#     print(list)
-#     print(s)
+#     #print(":part check:")
+#     #print(list)
+#     #print(s)
     for e in list:
         if e.lower() == "all":
             return True
         elif e == s:
             return True
         elif e.find(":") != -1:
-#             print("it has : data")
-#             print("we need to process")
+#             #print("it has : data")
+#             #print("we need to process")
             rangs = e.split(":")
             if((int(rangs[0]) <= int(s)) & (int(rangs[1]) >= int(s))):
                 return True
@@ -244,9 +244,9 @@ def upload():
 #         jsonfile.write('\n')
         rowJsonStr = json.dumps(row)
         rowJson = json.loads(rowJsonStr)
-        print(rowJson['Code Combo'])
+        #print(rowJson['Code Combo'])
         levels = doCodeCheck(rowJson['Code Combo'], data)
-        print(levels)
+        #print(levels)
         if  len(levels) > 0:
             level = "";
             for l in levels:
@@ -254,14 +254,94 @@ def upload():
             if level != "":
                 level = level[:-1]
             rowJson['Levels'] = level
-            print(rowJson)
+            #print(rowJson)
         else:
             rowJson['Levels'] = "NA"
         jsonArray.append(rowJson)
-#         print(json.dumps(row, indent=4))
-    print(jsonArray)
+#         #print(json.dumps(row, indent=4))
+    #print(jsonArray)
 
     return render_template('batch-finder.html', all_levels=jsonArray) 
+
+@app.route('/batch-finder/act-file-upload' , methods=['POST'])
+def actFileUpload():
+    reader = csv.DictReader(decode_utf8(request.files['file']))
+    jsonArray = []
+    data = getLevels()
+    
+    for row in reader:
+#         json.dump(row, jsonfile)
+#         jsonfile.write('\n')
+        rowJsonStr = json.dumps(row)
+        rowJson = json.loads(rowJsonStr)
+        combo = prepateCombo(rowJson['Company'],rowJson['Account'], rowJson['Department'],rowJson['Line Of Business'])
+        #print(combo)
+        levels = doCodeCheck(combo, data)
+        rowJson['Code Combo'] = combo
+        #print(levels)
+        if  len(levels) > 0:
+            level = "";
+            for l in levels:
+                level = level + l['level1'] + ","
+            if level != "":
+                level = level[:-1]
+            rowJson['Levels'] = level
+            #print(rowJson)
+        else:
+            rowJson['Levels'] = "NA"
+        jsonArray.append(rowJson)
+#         #print(json.dumps(row, indent=4))
+    #print(jsonArray)
+
+    return render_template('batch-finder.html', all_levels=jsonArray) 
+
+@app.route('/batch-finder/tab-file-upload' , methods=['POST'])
+def tabFileUpload():
+    reader = csv.reader(decode_utf8(request.files['file']), delimiter="\t", quotechar='"')
+    jsonArray = []
+    data = getLevels()
+    i=0
+    for row in reader:
+#         json.dump(row, jsonfile)
+#         jsonfile.write('\n')
+        rowJson = {}
+        if i!=0:
+            rowJsonStr = json.dumps(row)
+            #print(rowJsonStr)
+            combo = row[0]
+            #print(combo)
+            levels = doCodeCheck(combo, data)
+            rowJson['Code Combo'] = combo
+            #print(levels)
+            if  len(levels) > 0:
+                level = "";
+                for l in levels:
+                    level = level + l['level1'] + ","
+                if level != "":
+                    level = level[:-1]
+                rowJson['Levels'] = level
+                #print(rowJson)
+            else:
+                rowJson['Levels'] = "NA"
+            jsonArray.append(rowJson)
+        i=i+1
+#         #print(json.dumps(row, indent=4))
+    #print(jsonArray)
+
+    return render_template('batch-finder.html', all_levels=jsonArray) 
+
+
+
+def prepateCombo(company,account, dept, lob):
+    if len(company) < 3:
+        company = company.rjust(3,'0')
+    if len(account) < 4:
+        account = account.rjust(4,'0')
+    if len(dept) < 2:
+        dept = dept.rjust(2,"0")
+    if len(lob) < 2:
+        lob = lob.rjust(2,"0")
+    return company+'-'+account+"-"+dept+lob
 
 
 def validate(request):
@@ -273,7 +353,7 @@ def validate(request):
     lob = request.form['lob']
     errors = {};
     if level1 != '':
-        print(len(level1))
+        #print(len(level1))
         if len(level1) < 2 or len(level1) > 150:
             errors['level1'] = 'Level1 length should be greater than 2 and less than 150.'
     else:
@@ -349,6 +429,60 @@ def validateList(lstField, fl):
                 return "Length of the token (" + lp + ") is wrong."
                 
     return 'ok'   
+
+@app.route('/compare-act-ex-files')
+def compareAndGetNew():
+    return render_template('compare.html')   
+
+@app.route('/compare-act-ex-files' , methods=['POST'])
+def compareAndGetNewPost():
+    actReader = csv.DictReader(decode_utf8(request.files['actFile']))
+    actArray = []
+    for row in actReader:
+        rowJsonStr = json.dumps(row)
+        rowJson = json.loads(rowJsonStr)
+        #print(rowJsonStr)
+        combo = prepateCombo(rowJson['Company'],rowJson['Account'], rowJson['Department'],rowJson['Line Of Business'])
+        actArray.append(combo)
+    #print(actArray)
+    
+    exReader = csv.reader(decode_utf8(request.files['exportFile']), delimiter="\t", quotechar='"')
+    exArray = []
+    difArray = []
+    i=0
+    for row in exReader:
+        rowJson = {}
+        if i!=0:
+            rowJsonStr = json.dumps(row)
+            combo = row[0]
+            exArray.append(combo)
             
+            if(combo not in actArray):
+                difArray.append(combo)
+        i=i+1
+#         #print(json.dumps(row, indent=4))
+    #print(exArray)
+    #print(difArray)
+    jsonArray = []
+    if(len(difArray) >0 ):
+        data = getLevels()
         
-# app.run(debug=True)
+        for c in difArray:
+            levels = doCodeCheck(combo, data)
+            rowJson = {}
+            rowJson['Code Combo'] = c
+            #print(levels)
+            if  len(levels) > 0:
+                level = "";
+                for l in levels:
+                    level = level + l['level1'] + ","
+                if level != "":
+                    level = level[:-1]
+                rowJson['Levels'] = level
+                #print(rowJson)
+            else:
+                rowJson['Levels'] = "NA"
+            jsonArray.append(rowJson)
+    return render_template('compare.html',  all_levels=jsonArray)
+        
+#app.run(debug=True)
