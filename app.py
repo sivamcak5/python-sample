@@ -275,6 +275,7 @@ def actFileUpload():
         rowJsonStr = json.dumps(row)
         rowJson = json.loads(rowJsonStr)
         combo = prepateCombo(rowJson['Company'],rowJson['Account'], rowJson['Department'],rowJson['Line Of Business'])
+<<<<<<< HEAD
         #print(combo)
         levels = doCodeCheck(combo, data)
         rowJson['Code Combo'] = combo
@@ -341,6 +342,76 @@ def prepateCombo(company,account, dept, lob):
         dept = dept.rjust(2,"0")
     if len(lob) < 2:
         lob = lob.rjust(2,"0")
+=======
+        print(combo)
+        levels = doCodeCheck(combo, data)
+        rowJson['Code Combo'] = combo
+        print(levels)
+        if  len(levels) > 0:
+            level = "";
+            for l in levels:
+                level = level + l['level1'] + ","
+            if level != "":
+                level = level[:-1]
+            rowJson['Levels'] = level
+            print(rowJson)
+        else:
+            rowJson['Levels'] = "NA"
+        jsonArray.append(rowJson)
+#         print(json.dumps(row, indent=4))
+    print(jsonArray)
+
+    return render_template('batch-finder.html', all_levels=jsonArray) 
+
+@app.route('/batch-finder/tab-file-upload' , methods=['POST'])
+def tabFileUpload():
+    reader = csv.reader(decode_utf8(request.files['file']), delimiter="\t", quotechar='"')
+    jsonArray = []
+    data = getLevels()
+    i=0
+    for row in reader:
+#         json.dump(row, jsonfile)
+#         jsonfile.write('\n')
+        rowJson = {}
+        if i==0:
+            print(row)
+        else:
+            rowJsonStr = json.dumps(row)
+            print(rowJsonStr)
+            combo = row[0]
+            print(combo)
+            levels = doCodeCheck(combo, data)
+            rowJson['Code Combo'] = combo
+            print(levels)
+            if  len(levels) > 0:
+                level = "";
+                for l in levels:
+                    level = level + l['level1'] + ","
+                if level != "":
+                    level = level[:-1]
+                rowJson['Levels'] = level
+                print(rowJson)
+            else:
+                rowJson['Levels'] = "NA"
+            jsonArray.append(rowJson)
+        i=i+1
+#         print(json.dumps(row, indent=4))
+    print(jsonArray)
+
+    return render_template('batch-finder.html', all_levels=jsonArray) 
+
+
+
+def prepateCombo(company,account, dept, lob):
+    if len(company) < 3:
+        company = '{:03}'.format(company)
+    if len(account) < 4:
+        account = '{:04}'.format(account)
+    if len(dept) < 2:
+        dept = '{:03}'.format(dept)
+    if len(lob) < 2:
+        lob = '{:03}'.format(lob)
+>>>>>>> branch 'master' of https://github.com/sivamcak5/python-sample.git
     return company+'-'+account+"-"+dept+lob
 
 
