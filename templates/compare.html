@@ -60,8 +60,18 @@
 			<div class="row">
 			<div class="col-sm-12">
 			<div class="table-responsive">
-				<table id="data-table" class="table card-table table-vcenter text-nowrap" style="border: 1px solid #ccc;">
+				<table   class="table card-table table-vcenter text-nowrap" style="table-layout: fixed;border: 1px solid #ccc;">
 					<thead>
+						<tr>
+							<th width="50%">Combo Code</th>
+							<th width="50%">Levels</th>
+						</tr>
+					</thead>
+				</table>
+			</div>
+			<div class="table-responsive" style="max-height: 60vh;border: 1px solid #ccc;" >
+				<table id="data-table" class="table card-table table-vcenter text-nowrap" style="table-layout: fixed;">
+					<thead style="height: 0px;display: none;">
 						<tr>
 							<th width="50%">Combo Code</th>
 							<th width="50%">Levels</th>
@@ -80,6 +90,11 @@
 						 %}
 						
 						{% endif  %}
+						{% if all_levels|length ==0  : %}
+							<tr>
+							 <td colspan="2"> <div class="ml-auto" style="text-align: center;"> No Levels Found. </div> </td>
+							</tr>
+						{% endif %}
 
 					</tbody>
 				</table>
@@ -89,13 +104,13 @@
 			
 			</div>
 			
-			
 		</div>
 		<div class="card-footer text-right">
 			<div class="d-flex">
 				<a href="/levels" class="btn btn-outline-primary  ">Go
 					Home</a>
-				 
+				 <button id="export" type="button" class="btn btn-outline-primary ml-auto ">Export CSV
+					export</button>	
 			</div>
 		</div>
 	
@@ -107,25 +122,12 @@
 			<script type="text/javascript">
 	 
 				
-				require(['core', 'jquery.dataTables'], function(){
-						bf.init();
-					  	$('#data-table').DataTable();
+			require(['core', 'jquery.exportCSV'], function(){
+				$("#export").click(function(){
+					 $("#data-table").tableToCSV();
 				});
-				var bf = function(){
-					
-					return {
-						init: function(){
-							
-							$(".custom-file-input").change(function(e) {
-								var filePath = $(this).val();
-								filePath = filePath.substring(filePath.lastIndexOf("\\")+1,filePath.length);
-								$(this).closest(".custom-file").find(".custom-file-label").text(filePath);
-								return false;
-							});
-							 
-						}
-					}
-				}();
+			});
+				 
 			
 			 
 			

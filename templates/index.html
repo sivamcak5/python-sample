@@ -24,7 +24,8 @@
 				                         class="btn btn-outline-primary btn-sm"  title="Add new level"> New  <i class="fe fe-plus"  ></i> </a>  
 				                    </div>
 								</div>
-								<div class="table-responsive">
+								<div class="card-body px-0 py-0">
+									<div class="table-responsive">
 									<table class="table card-table table-vcenter text-nowrap" style="table-layout: fixed;">
 										<thead>
 											<tr>
@@ -40,17 +41,18 @@
 									</table>
 								</div>
 								<div class="table-responsive" style="max-height: 60vh;">
-									<table class="table card-table table-vcenter text-nowrap" style="table-layout: fixed;">
-									<colgroup>
-									<col style="width: 20%;"/>
-									<col style="width: 10%;"/>
-									<col style="width: 15%;"/>
-									<col style="width: 15%;"/>
-									<col style="width: 15%;"/>
-									<col style="width: 15%;"/>
-									<col style="width: 10%;"/>
-									
-									</colgroup>
+									<table id="data-table" class="table card-table table-vcenter text-nowrap" style="table-layout: fixed;">
+									  <thead style="display: none;">
+											<tr>
+												<th style="width: 20%;">Level1</th>
+												<th style="width: 10%;">LE LIST</th>
+												<th style="width: 15%;">NAT LIST</th>
+												<th style="width: 15%;">DEPT List</th>
+												<th style="width: 15%;">DEPT Exclusion List</th>
+												<th style="width: 15%;">LOB</th>
+												<th style="width: 10%;">Actions</th>
+											</tr>
+										</thead>
 
 										<tbody>
 											{% if all_levels|length : %}
@@ -87,6 +89,26 @@
 
 									</table>
 								</div>
+								
+								</div>
+								<div class="card-footer text-right">
+									<div class="d-flex">
+										<button id="export" type="button" class="btn btn-outline-primary ml-auto ">Export CSV
+											export</button>	
+											
+										 
+									</div>
+								</div>
+								<script type="text/javascript">
+	 
+				
+									require(['core', 'jquery.exportCSV'], function(){
+										$("#export").click(function(){
+											 $("#data-table").tableToCSV();
+										});
+									});
+								
+								</script>
 							</div>
 						</div>
 					</div>

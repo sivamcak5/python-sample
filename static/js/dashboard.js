@@ -7,7 +7,7 @@ require.config({
 		'vector-map-de' : [ 'vector-map', 'jquery' ],
 		'vector-map-world' : [ 'vector-map', 'jquery' ],
 		'core' : [ 'bootstrap', 'jquery' ],
-		'jquery.dataTables': ['jquery']
+		'jquery.exportCSV':['jquery'],
 	},
 	paths : {
 		'core' : 'static/js/core',
@@ -20,7 +20,7 @@ require.config({
 		'vector-map-de' : 'static/js/vendors/jquery-jvectormap-de-merc',
 		'vector-map-world' : 'static/js/vendors/jquery-jvectormap-world-mill',
 		'circle-progress' : 'static/js/vendors/circle-progress.min',
-		'jquery.dataTables' : 'static/plugins/datatables/datatables.min',
+		'jquery.exportCSV' : 'static/js/jquery.tabletoCSV',
 	},
 });
 window.tabler = {

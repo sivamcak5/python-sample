@@ -485,4 +485,4 @@ def compareAndGetNewPost():
             jsonArray.append(rowJson)
     return render_template('compare.html',  all_levels=jsonArray)
         
-#app.run(debug=True)
+# app.run(debug=True)
