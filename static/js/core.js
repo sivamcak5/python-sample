@@ -105,3 +105,32 @@ $(document).ready(function() {
     });
   }
 });
+
+var bf = function(){
+	
+	return {
+		init: function(){
+			
+			$(".custom-file-input").change(function(e) {
+				var filePath = $(this).val();
+				filePath = filePath.substring(filePath.lastIndexOf("\\")+1,filePath.length);
+				$(this).closest(".custom-file").find(".custom-file-label").text(filePath);
+				return false;
+			});
+			
+			$(".upload-form").submit(function(){
+				var isEmpty =false;
+				$(this).find(".custom-file-input").each(function(){
+					if($(this).val() == ''){
+						isEmpty = true;
+					}
+				});
+				if(isEmpty){
+					alert("Please attach a valid file before upload.");
+					return false;
+				}
+			});
+			 
+		}
+	}
+}();

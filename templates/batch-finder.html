@@ -21,9 +21,9 @@
 		<div class="card-body">
 			<div class="row">
 				<div class="col-sm-4 col-md-4">
-					<form action="/batch-finder/upload" enctype="multipart/form-data" method="post">
+					<form action="/batch-finder/upload" class="upload-form" enctype="multipart/form-data" method="post">
 					<div class="form-group">
-						<div class="form-label">Input CSV File</div>
+						<div class="form-label">Input Combo Code File</div>
 						<div class="input-group">
 							<div class="custom-file">
 								<input type="file" class="custom-file-input" name="file">
@@ -41,9 +41,9 @@
 					</form>
 				</div>
 				<div class="col-sm-4 col-md-4">
-					<form action="/batch-finder/act-file-upload" enctype="multipart/form-data" method="post">
+					<form action="/batch-finder/act-file-upload" class="upload-form" enctype="multipart/form-data" method="post">
 					<div class="form-group">
-						<div class="form-label">Input Exported File</div>
+						<div class="form-label">Input Actual Data File</div>
 						<div class="input-group">
 							<div class="custom-file">
 								<input type="file" class="custom-file-input" name="file">
@@ -61,9 +61,9 @@
 					</form>
 				</div>
 				<div class="col-sm-4 col-md-4">
-					<form action="/batch-finder/tab-file-upload" enctype="multipart/form-data" method="post">
+					<form action="/batch-finder/tab-file-upload" class="upload-form" enctype="multipart/form-data" method="post">
 					<div class="form-group">
-						<div class="form-label">Input Exported File (Tab Separated)</div>
+						<div class="form-label">Input Exported Account File</div>
 						<div class="input-group">
 							<div class="custom-file">
 								<input type="file" class="custom-file-input" name="file">
@@ -71,7 +71,6 @@
 							</div>
 							<div class="input-group-append">
 								<button type="submit" class="btn btn-outline-primary">Upload</button>
-								 
 								 
 							</div>
 						</div>
@@ -86,17 +85,19 @@
 				<table id="data-table-header" class="table card-table table-vcenter text-nowrap" style="table-layout: fixed;border: 1px solid #ccc;">
 					<thead>
 						<tr>
-							<th width="50%">Combo Code</th>
+							<th width="10%">#</th>
+							<th width="40%">Combo Code</th>
 							<th width="50%">Levels</th>
 						</tr>
 					</thead>
 				</table>
 			</div>
 			<div class="table-responsive" style="max-height: 60vh;border: 1px solid #ccc;" >
-				<table id="data-table" class="table card-table table-vcenter text-nowrap" style="table-layout: fixed;">
+				<table id="data-table" class="table table-striped table-hover card-table table-vcenter text-nowrap" style="table-layout: fixed;">
 					<thead style="height: 0px;display: none;">
 						<tr>
-							<th width="50%">Combo Code</th>
+							<th width="10%">#</th>
+							<th width="40%">Combo Code</th>
 							<th width="50%">Levels</th>
 						</tr>
 					</thead>
@@ -104,8 +105,9 @@
 						{% if all_levels|length : %}
 						{% for level in all_levels: %}
 						<tr>
-							<td>{{level['Code Combo']}}</td>
-							<td>{{'NA' if level['Levels'] == ''  else level['Levels'] }}</td>
+							<td>{{loop.index}}</td>
+							<td width="40%">{{level['Code Combo']}}</td>
+							<td width="50%">{{'NA' if level['Levels'] == ''  else level['Levels'] }}</td>
 						 
 						</tr>
 						{% endfor
@@ -148,6 +150,7 @@
 	 
 				
 				require(['core', 'jquery.exportCSV'], function(){
+					bf.init();
 					$("#export").click(function(){
 						 $("#data-table").tableToCSV();
 					});

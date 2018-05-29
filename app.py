@@ -44,43 +44,56 @@ def show(id):
 
 @app.route('/levels/create', methods=['POST'])
 def create():
-    errors = validate(request)
     rdata = {
-        'level1': request.form['level1'],
-        'ne_list': request.form['ne_list'],
-        'nat_list': request.form['nat_list'],
-        'dep_list': request.form['dep_list'],
-        'dep_ex_list': request.form['dep_ex_list'],
-        'lob': request.form['lob'],
+        'level1': request.form['level1'].replace(" ",""),
+        'ne_list': request.form['ne_list'].replace(" ",""),
+        'nat_list': request.form['nat_list'].replace(" ",""),
+        'dep_list': request.form['dep_list'].replace(" ",""),
+        'dep_ex_list': request.form['dep_ex_list'].replace(" ",""),
+        'lob': request.form['lob'].replace(" ",""),
     }
+    errors = validate(rdata)
+    
     
     if len(errors) > 0:
         return render_template('level_new.html', errors=errors, level=rdata)
-    query = "SELECT id "
-    query += "FROM pbcs_pl WHERE level1 = '{}' ".format(request.form['level1'])
-    query += "and ne_list= '{}' ".format(request.form['ne_list'])
-    query += "and nat_list= '{}' ".format(request.form['nat_list'])
-    query += "and dep_list='{}' ".format(request.form['dep_list'])
-    query += "and dep_ex_list='{}' ".format(request.form['dep_ex_list'])
-    query += "and lob='{}' ".format(request.form['lob'])
-    data = mysql.query_db(query)
     
+    data = checkExist(rdata);
     if len(data) > 0:
         errors = {'duplicate': 
                   {'msg':'Similar Level found. Do you want to Edit ?',
                    'id':str(data[0]['id']),
                    'level1': request.form['level1'] } }
         return render_template('level_new.html', errors=errors , level=rdata)
-    query = "INSERT INTO pbcs_pl (level1, ne_list, nat_list, dep_list, dep_ex_list, lob ) "
-    query += "VALUES (:level1, :ne_list, :nat_list, :dep_list, :dep_ex_list, :lob) "
-    
-    id = mysql.query_db(query, rdata)
+    insert(rdata);
     return redirect('/levels')
 
+def checkExist(rdata):
+    query = "SELECT id "
+    query += "FROM pbcs_pl WHERE level1 = '{}' ".format(rdata['level1'])
+    query += "and ne_list= '{}' ".format(rdata['ne_list'])
+    query += "and nat_list= '{}' ".format(rdata['nat_list'])
+    query += "and dep_list='{}' ".format(rdata['dep_list'])
+    query += "and dep_ex_list='{}' ".format(rdata['dep_ex_list'])
+    query += "and lob='{}' ".format(rdata['lob'])
+    data = mysql.query_db(query)
+    return data
 
+def insert(rdata):
+    
+    query = "INSERT INTO pbcs_pl (level1, ne_list, nat_list, dep_list, dep_ex_list, lob ) "
+    query += "VALUES (:level1, :ne_list, :nat_list, :dep_list, :dep_ex_list, :lob) "
+    id = mysql.query_db(query, rdata)
+    
 @app.route('/levels/<id>/destroy')
 def destory(id):
     query = "DELETE FROM pbcs_pl WHERE id = {}".format(id)
+    mysql.query_db(query)
+    return redirect('/levels')
+
+@app.route('/levels/remove-all')
+def destoryAll():
+    query = "DELETE FROM pbcs_pl "
     mysql.query_db(query)
     return redirect('/levels')
 
@@ -89,15 +102,15 @@ def destory(id):
 def update(id):
     
     data = {
-    'level1': request.form['level1'],
-    'ne_list': request.form['ne_list'],
-    'nat_list': request.form['nat_list'],
-    'dep_list': request.form['dep_list'],
-    'dep_ex_list': request.form['dep_ex_list'],
-    'lob': request.form['lob'],
+    'level1': request.form['level1'].replace(" ",""),
+    'ne_list': request.form['ne_list'].replace(" ",""),
+    'nat_list': request.form['nat_list'].replace(" ",""),
+    'dep_list': request.form['dep_list'].replace(" ",""),
+    'dep_ex_list': request.form['dep_ex_list'].replace(" ",""),
+    'lob': request.form['lob'].replace(" ",""),
     'id': id,
     }
-    errors = validate(request)
+    errors = validate(data)
     if len(errors) > 0:
         return render_template('level_edit.html', errors=errors , level=data)
     query = "SELECT id "
@@ -128,6 +141,41 @@ def update(id):
     mysql.query_db(query)
     return redirect('/levels')
 
+
+@app.route('/levels/import', methods=['POST'])
+def importLevels():
+#     LEVEL1    LE LIST    NAT LIST    DEPT List    DEPT Exclusion List    LOB
+
+    reader = csv.DictReader(decode_utf8(request.files['file']),  delimiter='\t')
+    jsonArray = []
+    errorArray= []
+    for row in reader:
+        rowJsonStr = json.dumps(row)
+        rowJson = json.loads(rowJsonStr)
+        rdata = {
+            'level1': rowJson['LEVEL1'].replace(" ",""),
+            'ne_list': rowJson['LE LIST'].replace(" ",""),
+            'nat_list': rowJson['NAT LIST'].replace(" ",""),
+            'dep_list': rowJson['DEPT List'].replace(" ",""),
+            'dep_ex_list': rowJson['DEPT Exclusion List'].replace(" ",""),
+            'lob': rowJson['LOB'].replace(" ",""),
+            }
+        errors = validate(rdata)
+        
+        if len(errors) == 0:
+            data = checkExist(rdata);
+            if len(data) > 0:
+                errors = {'duplicate': 
+                      {'msg':'Similar Level found. Do you want to Edit ?',
+                       'id':str(data[0]['id']),
+                       'level1': rdata['level1'] } }
+                errorArray.append(errors)
+            else:
+                insert(rdata);
+        else:
+            errorArray.append(errors)
+    
+    return render_template('index.html', all_levels=getLevels() , allErrors= errorArray)
 
 @app.route('/levels/search/<searchQuery>')
 def searchLevels(searchQuery):
@@ -344,13 +392,13 @@ def prepateCombo(company,account, dept, lob):
     return company+'-'+account+"-"+dept+lob
 
 
-def validate(request):
-    level1 = request.form['level1']
-    ne_list = request.form['ne_list'] 
-    nat_list = request.form['nat_list']
-    dep_list = request.form['dep_list']
-    dep_ex_list = request.form['dep_ex_list']
-    lob = request.form['lob']
+def validate(data):
+    level1 = data['level1']
+    ne_list = data['ne_list'] 
+    nat_list = data['nat_list']
+    dep_list = data['dep_list']
+    dep_ex_list = data['dep_ex_list']
+    lob = data['lob']
     errors = {};
     if level1 != '':
         #print(len(level1))
@@ -436,15 +484,6 @@ def compareAndGetNew():
 
 @app.route('/compare-act-ex-files' , methods=['POST'])
 def compareAndGetNewPost():
-    actReader = csv.DictReader(decode_utf8(request.files['actFile']))
-    actArray = []
-    for row in actReader:
-        rowJsonStr = json.dumps(row)
-        rowJson = json.loads(rowJsonStr)
-        #print(rowJsonStr)
-        combo = prepateCombo(rowJson['Company'],rowJson['Account'], rowJson['Department'],rowJson['Line Of Business'])
-        actArray.append(combo)
-    #print(actArray)
     
     exReader = csv.reader(decode_utf8(request.files['exportFile']), delimiter="\t", quotechar='"')
     exArray = []
@@ -456,13 +495,25 @@ def compareAndGetNewPost():
             rowJsonStr = json.dumps(row)
             combo = row[0]
             exArray.append(combo)
-            
-            if(combo not in actArray):
-                difArray.append(combo)
         i=i+1
 #         #print(json.dumps(row, indent=4))
     #print(exArray)
     #print(difArray)
+    
+    actReader = csv.DictReader(decode_utf8(request.files['actFile']))
+    actArray = []
+    for row in actReader:
+        rowJsonStr = json.dumps(row)
+        rowJson = json.loads(rowJsonStr)
+        #print(rowJsonStr)
+        combo = prepateCombo(rowJson['Company'],rowJson['Account'], rowJson['Department'],rowJson['Line Of Business'])
+        actArray.append(combo)
+        
+        if(combo not in exArray):
+            difArray.append(combo)
+    #print(actArray)
+    
+    
     jsonArray = []
     if(len(difArray) >0 ):
         data = getLevels()
@@ -485,4 +536,4 @@ def compareAndGetNewPost():
             jsonArray.append(rowJson)
     return render_template('compare.html',  all_levels=jsonArray)
         
-# app.run(debug=True)
+app.run(debug=True)

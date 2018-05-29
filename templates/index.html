@@ -20,8 +20,11 @@
 								<div class="card-header">
 									<h3 class="card-title">Levels</h3>
 									<div class="card-options">
+									
 									 <a href="/levels/new" 
-				                         class="btn btn-outline-primary btn-sm"  title="Add new level"> New  <i class="fe fe-plus"  ></i> </a>  
+				                         class="btn btn-outline-primary btn-sm"  title="Add new level"> New  <i class="fe fe-plus"  ></i> </a> 
+				                     <a href="/levels/remove-all" 
+				                         class="btn btn-outline-primary btn-sm"  title="Add new level"> Delete All  <i class="fe fe-x"  ></i> </a>  
 				                    </div>
 								</div>
 								<div class="card-body px-0 py-0">
@@ -29,27 +32,29 @@
 									<table class="table card-table table-vcenter text-nowrap" style="table-layout: fixed;">
 										<thead>
 											<tr>
-												<th style="width: 20%;">Level1</th>
+												<th style="width: 5%;">#</th>
+												<th style="width: 28%;">Level1</th>
 												<th style="width: 10%;">LE LIST</th>
-												<th style="width: 15%;">NAT LIST</th>
-												<th style="width: 15%;">DEPT List</th>
-												<th style="width: 15%;">DEPT Exclusion List</th>
-												<th style="width: 15%;">LOB</th>
+												<th style="width: 12%;">NAT LIST</th>
+												<th style="width: 12%;">DEPT List</th>
+												<th style="width: 13%;">DEPT Exclusion List</th>
+												<th style="width: 10%;">LOB</th>
 												<th style="width: 10%;">Actions</th>
 											</tr>
 										</thead>
 									</table>
 								</div>
 								<div class="table-responsive" style="max-height: 60vh;">
-									<table id="data-table" class="table card-table table-vcenter text-nowrap" style="table-layout: fixed;">
+									<table id="data-table" class="table table-striped table-hover card-table table-vcenter text-nowrap" style="table-layout: fixed;">
 									  <thead style="display: none;">
 											<tr>
-												<th style="width: 20%;">Level1</th>
+												<th style="width: 5%;">#</th>
+												<th style="width: 28%;">Level1</th>
 												<th style="width: 10%;">LE LIST</th>
-												<th style="width: 15%;">NAT LIST</th>
-												<th style="width: 15%;">DEPT List</th>
-												<th style="width: 15%;">DEPT Exclusion List</th>
-												<th style="width: 15%;">LOB</th>
+												<th style="width: 12%;">NAT LIST</th>
+												<th style="width: 12%;">DEPT List</th>
+												<th style="width: 13%;">DEPT Exclusion List</th>
+												<th style="width: 10%;">LOB</th>
 												<th style="width: 10%;">Actions</th>
 											</tr>
 										</thead>
@@ -58,13 +63,14 @@
 											{% if all_levels|length : %}
 											{% for level in all_levels: %}
 											<tr>
-												<td title="{{level.level1}}"><a href="/levels/{{level.id}}">{{level.level1}}</a></td>
-												<td title="{{level.ne_list}}">{{level.ne_list}}</td>
-												<td title="{{level.nat_list}}">{{level.nat_list}}</td>
-												<td title="{{level.dep_list}}">{{level.dep_list}}</td>
-												<td title="{{level.dep_ex_list}}">{{level.dep_ex_list}}</td>
-												<td title="{{level.lob}}">{{level.lob}}</td>
-												<td> 
+												<td style="width: 5%;"> {{loop.index}}</td>
+												<td style="width: 28%;" title="{{level.level1}}"><a href="/levels/{{level.id}}">{{level.level1}}</a></td>
+												<td style="width: 10%;" title="{{level.ne_list}}">{{level.ne_list}}</td>
+												<td style="width: 12%;" title="{{level.nat_list}}">{{level.nat_list}}</td>
+												<td style="width: 12%;" title="{{level.dep_list}}">{{level.dep_list}}</td>
+												<td style="width: 13%;" title="{{level.dep_ex_list}}">{{level.dep_ex_list}}</td>
+												<td style="width: 10%;" title="{{level.lob}}">{{level.lob}}</td>
+												<td style="width: 10%;" > 
 												<a class="icon" href="/levels/{{level.id}}">
 					                              <i class="fe fe-edit"></i>
 					                            </a>
@@ -81,7 +87,7 @@
 											
 											{% if all_levels|length ==0  : %}
 											<tr>
-											 <td colspan="7"> <div class="ml-auto" style="text-align: center;"> No Levels Found. </div> </td>
+											 <td colspan="8"> <div class="ml-auto" style="text-align: center;"> No Levels Found. </div> </td>
 											</tr>
 											{% endif %}
 
@@ -93,6 +99,18 @@
 								</div>
 								<div class="card-footer text-right">
 									<div class="d-flex">
+										<form action="/levels/import" class="upload-form" enctype="multipart/form-data" method="post">
+											<div class="input-group">
+												<div class="custom-file" style="text-align: left;">
+													<input type="file" class="custom-file-input" name="file">
+													<label class="custom-file-label">Choose file</label>
+												</div>
+												<div class="input-group-append">
+													<button type="submit" class="btn btn-outline-primary">Import</button>
+													 
+												</div>
+											</div>
+										</form>
 										<button id="export" type="button" class="btn btn-outline-primary ml-auto ">Export to CSV
 											</button>	
 											
@@ -103,6 +121,7 @@
 	 
 				
 									require(['core', 'jquery.exportCSV'], function(){
+										bf.init();
 										$("#export").click(function(){
 											 $("#data-table").tableToCSV();
 										});
@@ -111,6 +130,31 @@
 								</script>
 							</div>
 						</div>
+						
+						 {% for errors in allErrors %}
+						 <div class="col-sm-12">
+					       {% if errors %}
+			                <div class="alert alert-warning">
+			                	<ul>
+					        {% for field in errors %}
+					        	{% if field == 'duplicate': %}
+					        		<li>Duplicate : {{ errors[field]['msg'] }}
+					        		{% set id = errors[field]['id'] %}
+					        		{% set level1 = errors[field]['level1'] %}
+					        		<a href='/levels/{{id}}'> {{level1}} </a>
+					        		</li>
+					        	{% endif %}
+					        	{% if field != 'duplicate': %}
+					                <li>{{ errors[field] }}</li>
+					        	{% endif %}
+					        	
+					        {% endfor %}
+					        	</ul>
+			                </div>
+					       {% endif %}
+						
+						</div>
+						 {% endfor %}
 					</div>
 				</div>
 			</div>

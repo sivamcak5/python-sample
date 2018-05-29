@@ -18611,3 +18611,7 @@ svg {
 .fe-zoom-out:before {
   content: "\ea06";
 }
+
+.table-hover tr:hover {
+	background: #ffc !important;
+}
