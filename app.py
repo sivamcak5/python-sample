@@ -45,7 +45,7 @@ def show(id):
 @app.route('/levels/create', methods=['POST'])
 def create():
     rdata = {
-        'level1': request.form['level1'].replace(" ",""),
+        'level1': request.form['level1'].strip(),
         'ne_list': request.form['ne_list'].replace(" ",""),
         'nat_list': request.form['nat_list'].replace(" ",""),
         'dep_list': request.form['dep_list'].replace(" ",""),
@@ -102,7 +102,7 @@ def destoryAll():
 def update(id):
     
     data = {
-    'level1': request.form['level1'].replace(" ",""),
+    'level1': request.form['level1'].strip(),
     'ne_list': request.form['ne_list'].replace(" ",""),
     'nat_list': request.form['nat_list'].replace(" ",""),
     'dep_list': request.form['dep_list'].replace(" ",""),
@@ -519,7 +519,7 @@ def compareAndGetNewPost():
         data = getLevels()
         
         for c in difArray:
-            levels = doCodeCheck(combo, data)
+            levels = doCodeCheck(c, data)
             rowJson = {}
             rowJson['Code Combo'] = c
             #print(levels)
